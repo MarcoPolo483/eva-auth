@@ -6,7 +6,7 @@ import {
   TokenValidationError,
   TokenExpiredError,
   AudienceMismatchError,
-  UnauthorizedRoleError
+  UnauthorizedRoleError,
 } from "../util/errors.js";
 
 import type { RoleMapping } from "./roles.js";
@@ -14,11 +14,11 @@ import { extractRoles, authorizeRoles } from "./roles.js";
 
 export type ValidationOptions = {
   tenantId: string;
-  clientId: string;
+  clientId: string; // expected audience
   jwksBaseUrl?: string;
   roleMapping?: RoleMapping;
-  allowedTenants?: string[];
-  clockTolerance?: number;
+  allowedTenants?: string[]; // optional multi-tenant allowlist
+  clockTolerance?: number; // seconds of leeway
 };
 
 export type ValidatedToken = {
@@ -28,17 +28,16 @@ export type ValidatedToken = {
 
 export async function validateToken(raw: string, opts: ValidationOptions): Promise<ValidatedToken> {
   if (!raw) throw new TokenValidationError("Empty token");
+
   const decoded = safeDecode(raw);
-  const aud = decoded.aud;
-  if (!aud || (typeof aud === "string" ? aud !== opts.clientId : !aud.includes(opts.clientId))) {
+
+  // Audience check (supports string or array audiences)
+  if (!isAudienceOk(decoded.aud, opts.clientId)) {
     throw new AudienceMismatchError("Audience mismatch");
   }
 
-  const issTenant =
-    decoded.iss?.match(/https:\/\/sts\.windows\.net\/([^/]+)\/?/i)?.[1] ||
-    decoded.tid ||
-    decoded.tenantId;
-
+  // Tenant enforcement from iss or fallback to tid
+  const issTenant = tenantFromIss(decoded.iss) || (decoded as any).tid || (decoded as any).tenantId;
   if (!issTenant || issTenant !== opts.tenantId) {
     throw new TokenValidationError("Tenant mismatch");
   }
@@ -46,6 +45,7 @@ export async function validateToken(raw: string, opts: ValidationOptions): Promi
     throw new TokenValidationError("Tenant not allowed");
   }
 
+  // Build JWKS
   const jwksUrl =
     opts.jwksBaseUrl ?? `https://login.microsoftonline.com/${opts.tenantId}/discovery/v2.0/keys`;
   const JWKS = createRemoteJWKSet(new URL(jwksUrl));
@@ -54,7 +54,7 @@ export async function validateToken(raw: string, opts: ValidationOptions): Promi
     const { payload } = await jwtVerify(raw, JWKS, {
       audience: opts.clientId,
       issuer: decoded.iss,
-      clockTolerance: opts.clockTolerance ?? 5
+      clockTolerance: opts.clockTolerance ?? 5,
     });
 
     if (payload.exp && payload.exp * 1000 < Date.now()) {
@@ -79,4 +79,21 @@ function safeDecode(raw: string) {
   } catch {
     throw new TokenValidationError("Malformed token");
   }
+}
+
+function isAudienceOk(aud: unknown, expected: string): boolean {
+  if (!aud) return false;
+  if (typeof aud === "string") return aud === expected;
+  if (Array.isArray(aud)) return aud.includes(expected);
+  return false;
+}
+
+// Supports both sts.windows.net/<tenant>/ and login.microsoftonline.com/<tenant>/v2.0
+function tenantFromIss(iss?: string): string | undefined {
+  if (!iss) return undefined;
+  const m1 = iss.match(/^https:\/\/login\.microsoftonline\.com\/([^/]+)(?:\/v2\.0)?\/?$/i);
+  if (m1) return m1[1];
+  const m2 = iss.match(/^https:\/\/sts\.windows\.net\/([^/]+)\/?$/i);
+  if (m2) return m2[1];
+  return undefined;
 }

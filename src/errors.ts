@@ -12,7 +12,7 @@ export class AuthError extends Error {
   constructor(
     public readonly code: AuthErrorCode,
     message: string,
-    public readonly details?: unknown
+    public readonly details?: unknown,
   ) {
     super(message);
     this.name = "AuthError";

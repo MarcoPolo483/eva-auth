@@ -5,7 +5,15 @@ import importPlugin from "eslint-plugin-import";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "coverage/**", "node_modules/**", "src/examples/**", "*.cjs", "**/*.d.ts", "vitest.config.ts"]
+    ignores: [
+      "dist/**",
+      "coverage/**",
+      "node_modules/**",
+      "src/examples/**",
+      "*.cjs",
+      "**/*.d.ts",
+      "vitest.config.ts",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -16,8 +24,8 @@ export default tseslint.config(
       parserOptions: {
         project: "./tsconfig.json",
         tsconfigRootDir: import.meta.dirname,
-        sourceType: "module"
-      }
+        sourceType: "module",
+      },
     },
     plugins: { import: importPlugin },
     rules: {
@@ -25,8 +33,8 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-floating-promises": "warn",
       "@typescript-eslint/no-explicit-any": "off",
-      "no-console": "off"
-    }
+      "no-console": "off",
+    },
   },
-  prettier
+  prettier,
 );
