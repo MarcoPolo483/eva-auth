@@ -2,27 +2,40 @@
   "$schema": "https://marcopolo483.github.io/eva-suite/schemas/eva-memory-v1.json",
   "version": "1.0.0",
   "repo": {
-    "name": "REPO_NAME_PLACEHOLDER",
-    "pod": "POD_PLACEHOLDER",
-    "purpose": "DESCRIPTION_PLACEHOLDER",
+    "name": "eva-auth",
+    "pod": "POD-F",
+    "purpose": "Authentication and authorization service for EVA Suite. Azure AD B2C (citizens) + Microsoft Entra ID (employees). OAuth 2.0 + JWT validation + RBAC + session management. Reference: OpenWebUI OAuth patterns + PubSec Azure credential management.",
     "status": "active",
-    "owner": "OWNER_PLACEHOLDER",
-    "dependencies": [],
+    "owner": "P04-LIB + P15-DVM",
+    "dependencies": [
+      "eva-orchestrator (specification)",
+      "Azure AD B2C",
+      "Microsoft Entra ID",
+      "Azure Key Vault",
+      "Redis",
+      "Cosmos DB"
+    ],
     "lastUpdated": "2025-11-29T00:00:00Z"
   },
   "context": {
-    "summary": "SUMMARY_PLACEHOLDER",
-    "keyFiles": [],
-    "currentPhase": "Sprint 4 - Stabilization & Demo Prep",
+    "summary": "CRITICAL: BEFORE ANY WORK, read complete specification: docs/SPECIFICATION.md (1194 lines). Contains ALL authentication requirements including Azure AD B2C/Entra ID OAuth flows, JWT validation, RBAC, session management, API keys, audit logging, 12 quality gates, 6-phase implementation plan (8 weeks), and autonomous implementation model. Reference implementations: OpenWebUI OAuth patterns (token refresh, session management), PubSec Azure credential management. DO NOT START CODING WITHOUT READING SPECIFICATION FIRST.",
+    "keyFiles": [
+      "docs/SPECIFICATION.md",
+      ".eva-housekeeping.json",
+      ".eva-memory.json"
+    ],
+    "currentPhase": "BLOCKED: Must read docs/SPECIFICATION.md (1194 lines) FIRST before any implementation work. Specification contains: OAuth 2.0 flows, JWT validation, RBAC, session management, API keys, audit logging, test utilities.",
     "openIssues": 0,
-    "blockers": []
+    "blockers": [
+      "CRITICAL: Cannot start implementation without reading complete specification from docs/SPECIFICATION.md (1194 lines). Specification includes: Azure AD B2C citizen auth, Microsoft Entra ID employee auth, OAuth 2.0 flows, JWT validation with RS256, RBAC engine, tenant isolation, session management (Redis), API key management, audit logging (Cosmos DB), test utilities (mock tokens), 12 quality gates, 6-phase plan (8 weeks), autonomous model (Marco NOT available for incremental approvals)."
+    ]
   },
   "quality": {
     "testCoverage": 0,
     "lintWarnings": 0,
     "typeScriptStrict": false,
-    "wcagCompliance": "N/A",
-    "bilingualStatus": "N/A"
+    "wcagCompliance": "WCAG 2.2 AA (login UI)",
+    "bilingualStatus": "EN-CA/FR-CA (error messages for citizen-facing flows)"
   },
   "memory": {
     "lessons": [],
@@ -45,7 +58,7 @@
     "createdBy": "TASK-002 Bootstrap Memory Template",
     "createdAt": "2025-11-29T00:00:00Z",
     "templateVersion": "1.0.0",
-    "lastModifiedBy": null,
-    "lastModifiedAt": null
+    "lastModifiedBy": "EVA-AUTH Specification + Memory Fix",
+    "lastModifiedAt": "2025-12-07T20:00:00Z"
   }
 }
