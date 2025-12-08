@@ -172,30 +172,28 @@ jobs:
     name: Deploy to Development
     runs-on: ubuntu-latest
     needs: [build]
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/master'
     environment:
       name: development
-      url: https://eva-auth-dev.azurewebsites.net
+      url: https://eva-auth-dev-app.azurewebsites.net
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
-    
     - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       with:
-        app-name: eva-auth-dev
-        images: ghcr.io/${{ github.repository }}:develop-${{ github.sha }}
+        app-name: eva-auth-dev-app
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: ghcr.io/${{ github.repository }}:master-${{ github.sha }}
     
     - name: Run smoke tests
       run: |
-        sleep 30
-        curl -f https://eva-auth-dev.azurewebsites.net/health || exit 1
+        echo "Waiting 60s for app to start..."
+        sleep 60
+        curl -f https://eva-auth-dev-app.azurewebsites.net/health || exit 1
+        echo "✅ Health check passed!"
 
   deploy-staging:
     name: Deploy to Staging
