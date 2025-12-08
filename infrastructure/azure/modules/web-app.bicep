@@ -108,7 +108,14 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (environment ==
   }
   properties: {
     serverFarmId: appServicePlanId
-    siteConfig: webApp.properties.siteConfig
+    siteConfig: {
+      linuxFxVersion: 'DOCKER|ghcr.io/marcopolo483/eva-auth:latest'
+      alwaysOn: true
+      http20Enabled: true
+      minTlsVersion: '1.2'
+      ftpsState: 'Disabled'
+      healthCheckPath: '/health'
+    }
   }
 }
 
