@@ -4,7 +4,7 @@ param location string
 param tags object
 param environment string
 
-var sku = environment == 'prod' ? 'P1v3' : environment == 'staging' ? 'S1' : 'B1'
+var sku = environment == 'prod' ? 'P1v3' : environment == 'staging' ? 'S1' : 'F1'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: name
