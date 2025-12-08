@@ -21,8 +21,11 @@ RUN poetry config virtualenvs.create false \
 COPY src/ ./src/
 COPY tests/ ./tests/
 
-# Install the package
+# Install the package in editable mode
 RUN poetry install --no-interaction --no-ansi
+
+# Set Python path
+ENV PYTHONPATH=/app/src
 
 # Expose port
 EXPOSE 8000
