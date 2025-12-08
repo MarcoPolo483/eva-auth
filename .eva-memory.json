@@ -97,6 +97,7 @@
     "typeScriptStrict": false,
     "wcagCompliance": "WCAG 2.2 AA (login UI)",
     "bilingualStatus": "EN-CA/FR-CA (error messages for citizen-facing flows)"
+  },
   "memory": {
     "lessons": [
       "authlib OAuth2Client uses sync operations, not async - remove await from fetch_token() calls",
