@@ -45,7 +45,9 @@ $deployArgs = @(
     '--name', $deploymentName,
     '--location', $Location,
     '--template-file', 'main.bicep',
-    '--parameters', $parametersJson
+    '--parameters', "environment=$Environment",
+    '--parameters', "location=$Location",
+    '--parameters', "namePrefix=eva-auth"
 )
 
 if ($WhatIf) {
